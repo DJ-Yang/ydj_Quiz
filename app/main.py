@@ -13,7 +13,7 @@ from app.containers import Container
 from app.service.auth import AuthService
 from app.middleware.request import base_http_middleware
 
-from app.api import user, auth
+from app.api import user, auth, quiz
 
 container = Container()
 
@@ -37,6 +37,7 @@ app.add_middleware(
 app.container = container
 app.include_router(auth.router, prefix="/api/user")
 app.include_router(user.router, prefix="/api/user", dependencies=[Depends(AuthService.get_current_user)])
+app.include_router(quiz.router, prefix="/api/quiz", dependencies=[Depends(AuthService.get_current_user)])
 
 def setup_logging():
     current_dir = os.path.dirname(os.path.realpath(__file__))  # 현재 파일의 디렉토리 절대 경로

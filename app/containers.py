@@ -6,9 +6,11 @@ from app.config import ApplicationSettings
 from app.databases import Database
 
 from app.repository.user import UserRepository
+from app.repository.quiz import QuizRepository
 
 from app.service.user import UserService
 from app.service.auth import AuthService
+from app.service.quiz import QuizService
 
 load_dotenv()
 
@@ -17,6 +19,7 @@ class Container(containers.DeclarativeContainer):
         modules=[
             "app.api.user",
             "app.api.auth",
+            "app.api.quiz",
         ]
     )
 
@@ -39,5 +42,15 @@ class Container(containers.DeclarativeContainer):
         UserService,
         user_repository=user_repository,
         auth_service=auth_service,
+    )
+
+    quiz_repository = providers.Factory(
+        QuizRepository,
+        session_factory=db.provided.session,
+    )
+
+    quiz_service = providers.Factory(
+        QuizService,
+        quiz_repository=quiz_repository,
     )
 
