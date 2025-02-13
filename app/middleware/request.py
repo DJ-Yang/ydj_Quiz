@@ -16,16 +16,6 @@ logger = logging.getLogger(__name__)
 async def base_http_middleware(
     request: Request, call_next: Callable[[Request], Awaitable[StreamingResponse]]
 ) -> StreamingResponse | JSONResponse:
-    url = request.url.path
-    if settings.ENVIRONMENT == "production" and await url_pattern_check(url, settings.EXCEPT_PATH_REGEX):
-        # Swagger 페이지에 대한 접근을 차단
-        status_code = status.HTTP_404_NOT_FOUND
-        error_dict = {
-            "status_code": status_code,
-            "message": "존재하지 않는 페이지입니다.",
-        }
-        return JSONResponse(status_code=status_code, content=error_dict)
-
     try:
         response = await call_next(request)
         if response.status_code == status.HTTP_403_FORBIDDEN:

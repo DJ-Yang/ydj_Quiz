@@ -29,7 +29,6 @@ class ApplicationSettings(BaseSettings):
     PROJECT_DESCRIPTION: str = "For Backend Project Base"
     SECRET_KEY: str = os.environ.get("SECRET_KEY", "SECRET_KEY")
     ENVIRONMENT: str = os.environ.get("ENVIRONMENT")
-    EXCEPT_PATH_REGEX: str = r"^(/health|/metrics)$"
 
     db: DatabaseSettings = DatabaseSettings()
 
