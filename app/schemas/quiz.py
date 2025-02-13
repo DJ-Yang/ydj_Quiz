@@ -10,6 +10,7 @@ from app.schemas.base import ResponseBaseModel
 class SelectionDto(BaseModel):
     id: int
     content: str
+    is_correct: Optional[bool] = None
 
 
 class ProblemDto(BaseModel):
@@ -34,3 +35,8 @@ class RequestSelectionDto(BaseModel):
 class RequestProblemDto(BaseModel):
     title: str
     selections: list[RequestSelectionDto]
+
+
+class ProblemUpdateDto(BaseModel):
+    title: Optional[str] = None
+    selections: Optional[list[SelectionDto]] = None

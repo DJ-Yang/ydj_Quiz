@@ -9,7 +9,12 @@ from app.containers import Container
 from app.service.auth import AuthService
 from app.service.quiz import QuizService
 
-from app.schemas.quiz import ProblemListResponse, ProblemResponse, RequestProblemDto
+from app.schemas.quiz import (
+    ProblemListResponse,
+    ProblemResponse,
+    RequestProblemDto,
+    ProblemUpdateDto,
+)
 
 
 oauth2_scheme = HTTPBearer()
@@ -64,4 +69,17 @@ async def delete_problem(
         code=status.HTTP_200_OK,
         message="퀴즈를 성공적으로 삭제했습니다.",
         data=await quiz_service.delete_problem(id, current_user)
+    )
+
+@router.patch("/<id>", response_model=ProblemResponse)
+@inject
+async def update_problem(
+    id: int,
+    data: ProblemUpdateDto,
+    quiz_service: QuizService = Depends(Provide[Container.quiz_service]),
+):
+    return ProblemResponse(
+        code=status.HTTP_200_OK,
+        message="퀴즈를 성공적으로 삭제했습니다.",
+        data=await quiz_service.update_problem(id, data)
     )

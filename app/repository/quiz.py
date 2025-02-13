@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.quiz import Problem, UserProblemForm, Selection
-from app.schemas.quiz import RequestProblemDto
+from app.schemas.quiz import RequestProblemDto, ProblemUpdateDto
 
 
 class QuizRepository:
@@ -68,7 +68,35 @@ class QuizRepository:
             result = await session.execute(stmt)
             return result.scalars().one_or_none()
 
-            
+    async def update_problem(self, problem_id: int, data: ProblemUpdateDto):
+        async with self.session_factory() as session:
+            stmt = select(Problem).where(Problem.id == problem_id)
+            result = await session.execute(stmt)
+            problem = result.scalars().one_or_none()
 
+            if not problem:
+                raise HTTPException(status_code=404, detail="Problem not found")
 
-    
+            if data.title is not None:
+                problem.title = data.title
+
+            if data.selections:
+                for selection_data in data.selections:
+                    stmt = select(Selection).where(
+                        Selection.id == selection_data.id,  # ID 기준으로 찾음
+                        Selection.problem_id == problem_id  # 문제와 연결된 선택지인지 확인
+                    )
+                    result = await session.execute(stmt)
+                    selection = result.scalars().one_or_none()
+
+                    if not selection:
+                        raise HTTPException(status_code=404, detail=f"Selection {selection_data.id} not found")
+
+                    if selection_data.content is not None:
+                        selection.content = selection_data.content
+                    if selection_data.is_correct is not None:
+                        selection.is_correct = selection_data.is_correct
+
+            await session.commit()
+            await session.refresh(problem)
+            return problem

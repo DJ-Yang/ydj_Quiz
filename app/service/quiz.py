@@ -1,6 +1,11 @@
 from app.repository.quiz import QuizRepository
 
-from app.schemas.quiz import SelectionDto, ProblemDto, RequestProblemDto
+from app.schemas.quiz import (
+    SelectionDto,
+    ProblemDto,
+    RequestProblemDto,
+    ProblemUpdateDto,
+)
 
 
 class QuizService:
@@ -34,12 +39,14 @@ class QuizService:
                 SelectionDto(
                     id=selection.id,
                     content=selection.content,
+                    is_correct=selection.is_correct,
                 )
                 for selection in problem.selections
             ]
         )
 
     async def create_problem(self, data: RequestProblemDto):
+        # TODO: 한개 이상의 데이터가 정답이여야함 / 수정될 때도 마찬가지
         created_problem = await self._repository.create_problem(data)
 
         return await self.get_problem(created_problem.id)
@@ -47,3 +54,7 @@ class QuizService:
     async def delete_problem(self, problem_id: int, current_user: int):
         await self._repository.delete_problem(problem_id=problem_id)
         return await self.get_problem_list(current_user)
+
+    async def update_problem(self, problem_id: int, data: ProblemUpdateDto):
+        updated_problem = await self._repository.update_problem(problem_id=problem_id, data=data)
+        return await self.get_problem(updated_problem.id)
