@@ -5,8 +5,6 @@ from app.schemas.user import ResponseValidateDto, RequestRegisterDto, ResponseRe
 from app.errors import UserNotExistError, ValidationError
 
 
-FIVE_MEGA = 1024 * 1024 * 5
-
 class UserService:
     def __init__(
         self,
@@ -20,12 +18,13 @@ class UserService:
         duplicate_user = await self._repository.is_duplicate_nickname(nickname)
         return ResponseValidateDto(is_duplicated=duplicate_user is not None)
 
-    async def register(self, register_dto: RequestRegisterDto) -> None:
+    async def register(self, register_dto: RequestRegisterDto):
         if register_dto.password != register_dto.password1:
             raise
 
         created_user = await self._repository.create_user(
-            register_dto.nickname,
+            nickname=register_dto.nickname,
+            password=register_dto.password,
         )
         return ResponseRegisterDto(
             user_id=created_user.id,

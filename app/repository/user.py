@@ -20,10 +20,11 @@ class UserRepository:
             result = await session.execute(stmt)
             return result.one_or_none()
 
-    async def create_user(self, nickname: str, device_id: str) -> User:
+    async def create_user(self, nickname: str, password: str) -> User:
         async with self.session_factory() as session:
             user = User(
                 nickname=nickname,
+                password=password,
             )
             session.add(user)
             await session.commit()
