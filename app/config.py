@@ -9,19 +9,13 @@ from typing import Dict
 load_dotenv()
 
 class DatabaseSettings(BaseSettings):
-    MYSQL_USER: str | None
-    MYSQL_PASSWORD: str | None
-    MYSQL_HOST: str | None
-    MYSQL_PORT: str | None
-    MYSQL_DATABASE: str | None
-    
-    @property
-    def db_url(self) -> str:
-        return f"mysql+aiomysql://{self.MYSQL_USER}:{self.MYSQL_PASSWORD}@{self.MYSQL_HOST}:{self.MYSQL_PORT}/{self.MYSQL_DATABASE}"
-
-    @property
-    def sync_db_url(self) -> str:
-        return f"mysql+pymysql://{self.MYSQL_USER}:{self.MYSQL_PASSWORD}@{self.MYSQL_HOST}:{self.MYSQL_PORT}/{self.MYSQL_DATABASE}"
+    MYSQL_USER: str | None = os.environ.get("MYSQL_USER")
+    MYSQL_PASSWORD: str | None = os.environ.get("MYSQL_PASSWORD")
+    MYSQL_HOST: str | None = os.environ.get("MYSQL_HOST")
+    MYSQL_PORT: str | None = os.environ.get("MYSQL_PORT")
+    MYSQL_DATABASE: str | None = os.environ.get("MYSQL_DATABASE")
+    db_url: str | None = f"mysql+aiomysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}"
+    sync_db_url: str | None = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}"
 
 class ApplicationSettings(BaseSettings):
     PROJECT_NAME: str = "Base"

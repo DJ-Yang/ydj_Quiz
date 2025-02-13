@@ -24,6 +24,7 @@ def upgrade() -> None:
         "user",
         sa.Column("id", sa.Integer(), autoincrement=True, primary_key=True),
         sa.Column("nickname", sa.String(length=20), nullable=False, comment="별명"),
+        sa.Column("password", sa.String(length=64), nullable=False, comment="비밀번호"),
         sa.Column("created_dt", sa.DateTime(), nullable=False),
         sa.Column("updated_dt", sa.DateTime(), nullable=False),
         sa.UniqueConstraint("id"),
