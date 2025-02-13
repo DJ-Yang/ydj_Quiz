@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "ydj-quiz"
+version = "0.1.0"
+description = ""
+authors = ["양동진 <dong3831@hanmail.net>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.115.8"
+dependency-injector = "^4.45.0"
+sqlalchemy = "^2.0.38"
+uvicorn = {extras = ["standard"], version = "^0.34.0"}
+pydantic = "^2.10.6"
+pydantic-settings = "^2.7.1"
+alembic = "^1.14.1"
+aiomysql = "^0.2.0"
+pymysql = "^1.1.1"
+python-jose = "^3.3.0"
+python-multipart = "^0.0.20"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
