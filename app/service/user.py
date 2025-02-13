@@ -1,6 +1,6 @@
 from app.repository.user import UserRepository
 from app.service.auth import AuthService
-from app.schemas.user import ResponseValidateDto, RequestRegisterDto, ResponseRegisterDto, ResponseUserDto, ResponseLoginDto
+from app.schemas.user import ResponseValidateDto, RequestRegisterDto, ResponseUserDto, ResponseLoginDto, RequestLoginDto
 
 from app.errors import UserNotExistError, ValidationError
 
@@ -26,18 +26,20 @@ class UserService:
             nickname=register_dto.nickname,
             password=register_dto.password,
         )
-        return ResponseRegisterDto(
+        return ResponseUserDto(
             user_id=created_user.id,
             nickname=created_user.nickname,
             token=self.auth_service.create_access_token(created_user.id),
+            created_dt=created_user.created_dt,
         )
 
-    async def get_user(self, user_id: int) -> ResponseUserDto:
-        user = await self._repository.get_user_or_none(user_id)
+    async def login(self, data: RequestLoginDto) -> ResponseUserDto:
+        user = await self._repository.get_user_or_none(data)
         if user is None:
             raise UserNotExistError()
 
         return ResponseUserDto(
+            user_id=user.id,
             nickname=user.nickname,
             token=self.auth_service.create_access_token(user.id),
             created_dt=user.created_dt,

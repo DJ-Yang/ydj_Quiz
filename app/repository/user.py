@@ -2,10 +2,11 @@ from contextlib import AbstractAsyncContextManager
 from typing import Callable, Optional, Sequence
 from fastapi import UploadFile
 
-from sqlalchemy import insert, select, update
+from sqlalchemy import insert, select, update, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
+from app.schemas.user import RequestLoginDto
 
 
 class UserRepository:
@@ -31,9 +32,14 @@ class UserRepository:
             await session.refresh(user)
             return user
 
-    async def get_user_or_none(self, user_id: int) -> Optional[User]:
+    async def get_user_or_none(self, data: RequestLoginDto) -> Optional[User]:
         async with self.session_factory() as session:
-            stmt = select(User).where(User.id == user_id)
+            stmt = select(User).where(
+                and_(
+                    User.nickname == data.nickname,
+                    User.password == data.password,
+                )
+            )
             result = await session.execute(stmt)
             return result.scalar_one_or_none()
 

@@ -21,20 +21,20 @@ class RequestRegisterDto(BaseModel):
     password1: str
 
 
-class ResponseRegisterDto(BaseModel):
-    user_id: int
+class RequestLoginDto(BaseModel):
     nickname: str
-    token: str
-
-
-class ResponseRegister(ResponseBaseModel):
-    data: ResponseRegisterDto
+    password: str  
 
 
 class ResponseUserDto(BaseModel):
+    user_id: int
     nickname: str
     token: str
     created_dt: datetime
+
+
+class ResponseRegister(ResponseBaseModel):
+    data: ResponseUserDto
 
 
 class ResponseUser(ResponseBaseModel):

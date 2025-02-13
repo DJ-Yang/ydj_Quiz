@@ -12,6 +12,7 @@ from app.schemas.user import (
     ResponseValidate,
     ValidateNickname,
     ResponseUser,
+    RequestLoginDto,
 )
 from app.service.user import UserService
 
@@ -36,22 +37,20 @@ async def register(
     data: RequestRegisterDto,
     user_service: UserService = Depends(Provide[Container.user_service]),
 ):
-    result = await user_service.register(register_dto=data)
     return ResponseRegister(
         code=status.HTTP_200_OK,
         message="회원가입이 완료되었습니다.",
-        data=result 
+        data=await user_service.register(register_dto=data) 
     )
 
 @router.post("/login", response_model=ResponseUser)
 @inject
 async def login(
-    nickname: Annotated[str, Form(description="닉네임", example="닉네임")],
-    password: Annotated[str, Form(description="비밀번호", example="비밀번호")],
+    data: RequestLoginDto,
     user_service: UserService = Depends(Provide[Container.user_service]),
 ):
     return ResponseUser(
         code=status.HTTP_200_OK,
         message="사용자 조회를 완료했습니다.",
-        data=await user_service.get_user(current_user),
+        data=await user_service.login(data),
     )
