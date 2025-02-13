@@ -42,7 +42,8 @@ class QuizService:
     async def create_problem(self, data: RequestProblemDto):
         created_problem = await self._repository.create_problem(data)
 
-        try:
-            return await self.get_problem(created_problem.id)
-        except Exception as e:
-            print("error", e)
+        return await self.get_problem(created_problem.id)
+
+    async def delete_problem(self, problem_id: int, current_user: int):
+        await self._repository.delete_problem(problem_id=problem_id)
+        return await self.get_problem_list(current_user)

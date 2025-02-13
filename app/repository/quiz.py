@@ -46,12 +46,15 @@ class QuizRepository:
 
     async def delete_problem(self, problem_id: int):
         async with self.session_factory() as session:
-            stmt = (
-                select(Problem)
-                .where(Problem.id == problem_id)
-            )
-            problem = await session.execute(stmt)
-            problem.delete()
+            stmt = select(Problem).where(Problem.id == problem_id)
+            result = await session.execute(stmt)
+            problem = result.scalars().one_or_none()
+
+            if not problem:
+                raise ValueError("Problem not found")
+
+            await session.delete(problem)
+            await session.commit()
 
     async def get_problem_detail(self, problem_id: int):
         async with self.session_factory() as session:

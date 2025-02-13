@@ -52,3 +52,16 @@ async def get_problem(
         message="퀴즈를 성공적으로 불러왔습니다.",
         data=await quiz_service.get_problem(id)
     )
+
+@router.delete("/<id>", response_model=ProblemListResponse)
+@inject
+async def delete_problem(
+    id: int,
+    current_user: currentUser,
+    quiz_service: QuizService = Depends(Provide[Container.quiz_service]),
+):
+    return ProblemListResponse(
+        code=status.HTTP_200_OK,
+        message="퀴즈를 성공적으로 삭제했습니다.",
+        data=await quiz_service.delete_problem(id, current_user)
+    )
