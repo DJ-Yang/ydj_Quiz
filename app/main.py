@@ -38,17 +38,6 @@ app.include_router(auth.router, prefix="/api/user")
 app.include_router(user.router, prefix="/api/user", dependencies=[Depends(AuthService.get_current_user)])
 app.include_router(quiz.router, prefix="/api/quiz", dependencies=[Depends(AuthService.get_current_user)])
 
-def setup_logging():
-    current_dir = os.path.dirname(os.path.realpath(__file__))  # 현재 파일의 디렉토리 절대 경로
-    config_path = os.path.join(current_dir, 'logging.json')  # 로깅 설정 파일의 절대 경로
-
-    if os.path.exists(config_path):
-        with open(config_path, 'rt') as f:
-            config = json.load(f)
-        logging.config.dictConfig(config)
-    else:
-        print(f"Cannot find logging configuration file at {config_path}")
-
 @app.get(
     "/health",
     responses={
