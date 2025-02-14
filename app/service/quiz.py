@@ -97,38 +97,35 @@ class QuizService:
         )
 
     async def get_user_submit_list(self, user_id: int):
-        try:
-            user_submit_list = await self._repository.get_user_submit(user_id)
+        user_submit_list = await self._repository.get_user_submit(user_id)
 
-            result = []
-            total_score = 0
-            for sumit_data in user_submit_list:
-                problem = sumit_data.problem
+        result = []
+        total_score = 0
+        for sumit_data in user_submit_list:
+            problem = sumit_data.problem
 
-                selections = await self._repository.get_selection_list(
+            selections = await self._repository.get_selection_list(
+                problem_id=problem.id,
+                id_list=convert_str_to_list(sumit_data.choices),
+            )
+
+            result.append(
+                UserSubmitDto(
                     problem_id=problem.id,
-                    id_list=convert_str_to_list(sumit_data.choices),
+                    title=problem.title,
+                    selections=[
+                        SelectionDto(
+                            id=selection.id,
+                            content=selection.content,
+                            is_correct=selection.is_correct,
+                        ) for selection in selections
+                    ]
                 )
+            )
 
-                result.append(
-                    UserSubmitDto(
-                        problem_id=problem.id,
-                        title=problem.title,
-                        selections=[
-                            SelectionDto(
-                                id=selection.id,
-                                content=selection.content,
-                                is_correct=selection.is_correct,
-                            ) for selection in selections
-                        ]
-                    )
-                )
+            total_score += sumit_data.score
 
-                total_score += sumit_data.score
-
-            return {
-                "uesr_submit_data": result,
-                "total_score": total_score
-            }
-        except Exception as e:
-            print(e)
+        return {
+            "uesr_submit_data": result,
+            "total_score": total_score
+        }
