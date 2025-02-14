@@ -14,6 +14,8 @@ from app.schemas.quiz import (
     ProblemResponse,
     RequestProblemDto,
     ProblemUpdateDto,
+    ProblemSubmitDto,
+    SumbitResponse,
 )
 
 
@@ -82,4 +84,19 @@ async def update_problem(
         code=status.HTTP_200_OK,
         message="퀴즈를 성공적으로 삭제했습니다.",
         data=await quiz_service.update_problem(id, data)
+    )
+
+@router.post("/<id>/submit", response_model=SumbitResponse)
+@inject
+async def submit_problem_answer(
+    id: int,
+    current_user: currentUser,
+    data: ProblemSubmitDto,
+    quiz_service: QuizService = Depends(Provide[Container.quiz_service]),
+
+):
+    return SumbitResponse(
+        code=status.HTTP_200_OK,
+        message="정답을 성공적으로 제출했습니다.",
+        data=await quiz_service.submit_problem_answer(id, current_user, data)
     )

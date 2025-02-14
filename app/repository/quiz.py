@@ -1,7 +1,7 @@
 from contextlib import AbstractAsyncContextManager
 from typing import Callable, Optional
 
-from sqlalchemy import insert, select, update
+from sqlalchemy import insert, select, update, and_
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -83,8 +83,8 @@ class QuizRepository:
             if data.selections:
                 for selection_data in data.selections:
                     stmt = select(Selection).where(
-                        Selection.id == selection_data.id,  # ID 기준으로 찾음
-                        Selection.problem_id == problem_id  # 문제와 연결된 선택지인지 확인
+                        Selection.id == selection_data.id,
+                        Selection.problem_id == problem_id
                     )
                     result = await session.execute(stmt)
                     selection = result.scalars().one_or_none()
@@ -100,3 +100,25 @@ class QuizRepository:
             await session.commit()
             await session.refresh(problem)
             return problem
+
+    async def get_selection_list(self, problem_id: int, id_list: list):
+        async with self.session_factory() as session:
+            stmt = (
+                select(Selection)
+                .where(
+                    and_(
+                        Selection.problem_id == problem_id,
+                        Selection.id.in_(id_list)
+                    )
+                )
+            )
+            result = await session.execute(stmt)
+            return result.scalars().all()
+
+    async def create_user_submit(self, submit_data: dict):
+        async with self.session_factory() as session:
+            submit_obj = UserProblemForm(**submit_data)
+            session.add(submit_obj)
+            await session.commit()
+            await session.refresh(submit_obj)
+            return submit_obj

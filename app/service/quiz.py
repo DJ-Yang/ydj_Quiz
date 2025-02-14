@@ -5,7 +5,9 @@ from app.schemas.quiz import (
     ProblemDto,
     RequestProblemDto,
     ProblemUpdateDto,
+    ProblemSubmitDto,
 )
+from app.utils import convert_list_to_str, convert_str_to_list
 
 
 class QuizService:
@@ -28,9 +30,6 @@ class QuizService:
 
     async def get_problem(self, problem_id: int):
         problem = await self._repository.get_problem_detail(problem_id=problem_id)
-
-        for selection in problem.selections:
-            print(selection)
 
         return ProblemDto(
             id=problem.id,
@@ -58,3 +57,40 @@ class QuizService:
     async def update_problem(self, problem_id: int, data: ProblemUpdateDto):
         updated_problem = await self._repository.update_problem(problem_id=problem_id, data=data)
         return await self.get_problem(updated_problem.id)
+
+    async def submit_problem_answer(self, problem_id: int, user_id: int, data: ProblemSubmitDto):
+        problem = await self._repository.get_problem_detail(problem_id=problem_id)
+
+        if not problem:
+            raise
+        
+        selections = await self._repository.get_selection_list(problem_id=problem_id, id_list=data.answer_list)
+
+        count = 0
+        selection_dto_list = []
+        for selection in selections:
+            if selection.is_correct is True:
+                count += 1
+
+            selection_dto_list.append(
+                SelectionDto(
+                    id=selection.id,
+                    content=selection.content,
+                    is_correct=selection.is_correct,
+                )
+            )
+
+        submit_data = {
+            "user_id": user_id,
+            "problem_id": problem_id,
+            "choices": convert_list_to_str(data.answer_list),
+            "score": 1 if len(data.answer_list) == count else 0
+        }
+
+        user_submit_data = await self._repository.create_user_submit(submit_data)
+
+        return UserSubmitDto(
+            problem_id=problem_id,
+            title="test",
+            selections=selection_dto_list,
+        )
