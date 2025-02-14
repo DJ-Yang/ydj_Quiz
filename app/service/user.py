@@ -1,8 +1,12 @@
+import logging
+
 from app.repository.user import UserRepository
 from app.service.auth import AuthService
 from app.schemas.user import ResponseValidateDto, RequestRegisterDto, ResponseUserDto, ResponseLoginDto, RequestLoginDto
 
 from app.errors import UserNotExistError, ValidationError
+
+logger = logging.getLogger(__name__)
 
 
 class UserService:
@@ -15,6 +19,7 @@ class UserService:
         self.auth_service: AuthService = auth_service
 
     async def is_duplicate_nickname(self, nickname) -> ResponseValidateDto:
+        logger.info("로깅 테스트")
         duplicate_user = await self._repository.is_duplicate_nickname(nickname)
         return ResponseValidateDto(is_duplicated=duplicate_user is not None)
 

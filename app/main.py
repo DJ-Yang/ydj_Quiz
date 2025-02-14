@@ -1,8 +1,6 @@
 import os
 import json
 from starlette.middleware.base import BaseHTTPMiddleware
-import logging
-import logging.config
 
 from fastapi import FastAPI, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,6 +9,7 @@ from app.config import settings
 from app.containers import Container
 from app.service.auth import AuthService
 from app.middleware.request import base_http_middleware
+from app.logging import setup_logging
 
 from app.api import user, auth, quiz
 
@@ -37,6 +36,8 @@ app.container = container
 app.include_router(auth.router, prefix="/api/user")
 app.include_router(user.router, prefix="/api/user", dependencies=[Depends(AuthService.get_current_user)])
 app.include_router(quiz.router, prefix="/api/quiz", dependencies=[Depends(AuthService.get_current_user)])
+
+setup_logging()
 
 @app.get(
     "/health",

@@ -1,0 +1,69 @@
+{
+    "disable_existing_loggers": false,
+    "formatters": {
+        "json": {
+            "()": "app.logging.CustomisedJSONFormatter"
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
+            "level": "INFO",
+            "stream": "ext://sys.stdout"
+        },
+        "null": {
+            "class": "logging.NullHandler"
+        },
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "INFO",
+            "formatter": "json",
+            "filename": "/Users/yangdongjin/Desktop/ydj_Quiz/app/log/logfile.log",
+            "maxBytes": 10485760,
+            "backupCount": 20,
+            "encoding": "utf8"
+        }
+    },
+    "loggers": {
+        "": {
+            "handlers": [
+                "console",
+                "file"
+            ],
+            "propagate": false
+        },
+        "uvicorn": {
+            "handlers": [
+                "console",
+                "file"
+            ],
+            "level": "INFO",
+            "propagate": false
+        },
+        "uvicorn.error": {
+            "handlers": [
+                "console",
+                "file"
+            ],
+            "level": "INFO",
+            "propagate": false
+        },
+        "uvicorn.access": {
+            "handlers": [
+                "console",
+                "file"
+            ],
+            "level": "INFO",
+            "propagate": false
+        }
+    },
+    "root": {
+        "handlers": [
+            "console",
+            "file"
+        ],
+        "level": "INFO"
+    },
+    "version": 1
+}
