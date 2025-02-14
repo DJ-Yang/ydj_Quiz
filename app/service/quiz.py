@@ -6,6 +6,7 @@ from app.schemas.quiz import (
     RequestProblemDto,
     ProblemUpdateDto,
     ProblemSubmitDto,
+    UserSubmitDto,
 )
 from app.utils import convert_list_to_str, convert_str_to_list
 
@@ -63,7 +64,7 @@ class QuizService:
 
         if not problem:
             raise
-        
+
         selections = await self._repository.get_selection_list(problem_id=problem_id, id_list=data.answer_list)
 
         count = 0
@@ -89,8 +90,11 @@ class QuizService:
 
         user_submit_data = await self._repository.create_user_submit(submit_data)
 
-        return UserSubmitDto(
-            problem_id=problem_id,
-            title="test",
-            selections=selection_dto_list,
-        )
+        try:
+            return UserSubmitDto(
+                problem_id=problem_id,
+                title=problem.title,
+                selections=selection_dto_list,
+            )
+        except Exception as e:
+            print(e)
