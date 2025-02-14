@@ -1,9 +1,11 @@
-from app.errors import InvalidTokenError
 from jose import jwt
-from app.config import settings
 from typing import Annotated
+
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi import Security
+
+from app.config import settings
+from app.errors import InvalidTokenError
 
 oauth2_scheme = HTTPBearer()
 

@@ -1,7 +1,4 @@
-from datetime import date, datetime
-from typing import Optional
-
-from sqlalchemy import Enum, String, Integer, DateTime, Boolean, Double, Date, ForeignKey, Text
+from sqlalchemy import String, Integer, Boolean, ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import BaseModel

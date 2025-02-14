@@ -1,10 +1,9 @@
 import os
-import urllib.parse
-import json
+
 from dotenv import load_dotenv
-from pydantic import validator, ValidationError
+from pydantic import ValidationError
 from pydantic_settings import BaseSettings
-from typing import Dict
+
 
 load_dotenv()
 

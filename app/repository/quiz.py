@@ -1,5 +1,5 @@
 from contextlib import AbstractAsyncContextManager
-from typing import Callable, Optional
+from typing import Callable
 
 from sqlalchemy import insert, select, update, and_
 from sqlalchemy.orm import selectinload, joinedload

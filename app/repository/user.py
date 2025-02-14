@@ -1,8 +1,7 @@
 from contextlib import AbstractAsyncContextManager
-from typing import Callable, Optional, Sequence
-from fastapi import UploadFile
+from typing import Callable, Optional
 
-from sqlalchemy import insert, select, update, and_
+from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
