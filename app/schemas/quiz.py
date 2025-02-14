@@ -55,3 +55,7 @@ class UserSubmitDto(BaseModel):
 
 class SumbitResponse(ResponseBaseModel):
     data: UserSubmitDto
+
+
+class SubmitListResponse(ResponseBaseModel):
+    data: dict

@@ -45,7 +45,7 @@ def upgrade() -> None:
         sa.Column('user_id', sa.Integer(), sa.ForeignKey('user.id', ondelete='CASCADE'), nullable=False, comment='작성자 ID'),
         sa.Column('problem_id', sa.Integer(), sa.ForeignKey('problem.id', ondelete='CASCADE'), nullable=False, comment='문제 ID'),
         sa.Column('choices', sa.Text(), nullable=False, comment='제출지'),
-        sa.Column('score', sa.String(8), nullable=True, comment='점수'),
+        sa.Column('score', sa.Integer(), nullable=True, comment='점수'),
         sa.Column('created_dt', sa.DateTime(), nullable=False),
         sa.Column('updated_dt', sa.DateTime(), nullable=False),
         sa.UniqueConstraint('id'),

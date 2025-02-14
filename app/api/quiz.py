@@ -16,6 +16,7 @@ from app.schemas.quiz import (
     ProblemUpdateDto,
     ProblemSubmitDto,
     SumbitResponse,
+    SubmitListResponse,
 )
 
 
@@ -99,4 +100,16 @@ async def submit_problem_answer(
         code=status.HTTP_200_OK,
         message="정답을 성공적으로 제출했습니다.",
         data=await quiz_service.submit_problem_answer(id, current_user, data)
+    )
+
+@router.get("/mypage", response_model=SubmitListResponse)
+@inject
+async def my_submit_list(
+    current_user: currentUser,
+    quiz_service: QuizService = Depends(Provide[Container.quiz_service]),
+):
+    return SubmitListResponse(
+        code=status.HTTP_200_OK,
+        message="제출한 문제 목록을 불러왔습니다.",
+        data=await quiz_service.get_user_submit_list(current_user)
     )

@@ -2,7 +2,7 @@ from contextlib import AbstractAsyncContextManager
 from typing import Callable, Optional
 
 from sqlalchemy import insert, select, update, and_
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, joinedload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.quiz import Problem, UserProblemForm, Selection
@@ -122,3 +122,15 @@ class QuizRepository:
             await session.commit()
             await session.refresh(submit_obj)
             return submit_obj
+        
+    async def get_user_submit(self, user_id: int):
+        async with self.session_factory() as session:
+            stmt = (
+                select(UserProblemForm)
+                .where(UserProblemForm.user_id == user_id)
+                .options(
+                    joinedload(UserProblemForm.problem)
+                )
+            )
+            result = await session.execute(stmt)
+            return result.scalars().all()

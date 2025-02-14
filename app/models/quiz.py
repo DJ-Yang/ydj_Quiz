@@ -20,7 +20,7 @@ class UserProblemForm(BaseModel):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete="CASCADE"), comment="작성자 ID")
     problem_id: Mapped[int] = mapped_column(ForeignKey("problem.id", ondelete="CASCADE"), comment="문제 ID")
     choices: Mapped[str] = mapped_column(Text, comment="제출지")
-    score: Mapped[str] = mapped_column(String(8), nullable=True, comment="점수")
+    score: Mapped[int] = mapped_column(Integer(), nullable=True, comment="점수")
 
     problem: Mapped["Problem"] = relationship(back_populates="users")
     user: Mapped["User"] = relationship(back_populates="problems")
