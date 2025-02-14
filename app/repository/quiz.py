@@ -105,6 +105,10 @@ class QuizRepository:
                     )
                     session.add(new_selection)
 
+            await session.execute(
+                UserProblemForm.__table__.delete().where(UserProblemForm.problem_id == problem_id)
+            )
+
             await session.commit()
             await session.refresh(problem)
             return problem
