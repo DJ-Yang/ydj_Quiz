@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from typing import Annotated
 from dependency_injector.wiring import Provide, inject
 from fastapi.security import HTTPBearer
 from starlette import status
