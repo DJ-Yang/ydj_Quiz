@@ -38,8 +38,8 @@ class RequestProblemDto(BaseModel):
 
 
 class ProblemUpdateDto(BaseModel):
-    title: Optional[str] = None
-    selections: Optional[list[SelectionDto]] = None
+    title: str
+    selections: list[SelectionDto]
 
 
 # TODO: 나중에 한 퀴즈에 하나의 문제가 아니라 두개 이상일 수도 있겠다.

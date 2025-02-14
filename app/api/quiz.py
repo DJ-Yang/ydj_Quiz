@@ -74,7 +74,7 @@ async def delete_problem(
         data=await quiz_service.delete_problem(id, current_user)
     )
 
-@router.patch("/<id>", response_model=ProblemResponse)
+@router.put("/<id>", response_model=ProblemResponse)
 @inject
 async def update_problem(
     id: int,

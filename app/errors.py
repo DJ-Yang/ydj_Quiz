@@ -29,3 +29,6 @@ class ValidationError(APIException):
     def __init__(self, message: str) -> None:
         super().__init__(status_code=status.HTTP_400_BAD_REQUEST, message=message)
 
+class ProblemNotExistError(APIException):
+    def __init__(self) -> None:
+        super().__init__(status_code=status.HTTP_404_NOT_FOUND, message="해당 문제가 존재하지 않습니다.")

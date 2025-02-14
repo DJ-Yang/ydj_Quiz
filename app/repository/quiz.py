@@ -74,28 +74,23 @@ class QuizRepository:
             result = await session.execute(stmt)
             problem = result.scalars().one_or_none()
 
-            if not problem:
-                raise HTTPException(status_code=404, detail="Problem not found")
+            problem.title = data.title
 
-            if data.title is not None:
-                problem.title = data.title
+            for selection_data in data.selections:
+                stmt = select(Selection).where(
+                    Selection.id == selection_data.id,
+                    Selection.problem_id == problem_id
+                )
+                result = await session.execute(stmt)
+                selection = result.scalars().one_or_none()
 
-            if data.selections:
-                for selection_data in data.selections:
-                    stmt = select(Selection).where(
-                        Selection.id == selection_data.id,
-                        Selection.problem_id == problem_id
-                    )
-                    result = await session.execute(stmt)
-                    selection = result.scalars().one_or_none()
+                if not selection:
+                    raise HTTPException(status_code=404, detail=f"Selection {selection_data.id} not found")
 
-                    if not selection:
-                        raise HTTPException(status_code=404, detail=f"Selection {selection_data.id} not found")
-
-                    if selection_data.content is not None:
-                        selection.content = selection_data.content
-                    if selection_data.is_correct is not None:
-                        selection.is_correct = selection_data.is_correct
+                if selection_data.content is not None:
+                    selection.content = selection_data.content
+                if selection_data.is_correct is not None:
+                    selection.is_correct = selection_data.is_correct
 
             await session.commit()
             await session.refresh(problem)

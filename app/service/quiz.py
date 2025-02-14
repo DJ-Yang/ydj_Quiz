@@ -9,6 +9,7 @@ from app.schemas.quiz import (
     UserSubmitDto,
 )
 from app.utils import convert_list_to_str, convert_str_to_list
+from app.errors import ProblemNotExistError, ValidationError
 
 
 class QuizService:
@@ -32,6 +33,9 @@ class QuizService:
     async def get_problem(self, problem_id: int):
         problem = await self._repository.get_problem_detail(problem_id=problem_id)
 
+        if not problem:
+            raise ProblemNotExistError()
+
         return ProblemDto(
             id=problem.id,
             title=problem.title,
@@ -45,8 +49,16 @@ class QuizService:
             ]
         )
 
+    def _check_is_correct_true(self, selection_list: list) -> bool:
+        for selection in selection_list:
+            if selection.is_correct is True:
+                return True
+        return False
+
     async def create_problem(self, data: RequestProblemDto):
-        # TODO: 한개 이상의 데이터가 정답이여야함 / 수정될 때도 마찬가지
+        if not self._check_is_correct_true(data.selections):
+            raise ValidationError("최소한 1개 이상의 정답이 존재해야 합니다.")
+
         created_problem = await self._repository.create_problem(data)
 
         return await self.get_problem(created_problem.id)
@@ -56,16 +68,20 @@ class QuizService:
         return await self.get_problem_list(current_user)
 
     async def update_problem(self, problem_id: int, data: ProblemUpdateDto):
+        if not self._check_is_correct_true(data.selections):
+            raise ValidationError("최소한 1개 이상의 정답이 존재해야 합니다.")
+
         updated_problem = await self._repository.update_problem(problem_id=problem_id, data=data)
         return await self.get_problem(updated_problem.id)
 
     async def submit_problem_answer(self, problem_id: int, user_id: int, data: ProblemSubmitDto):
         problem = await self._repository.get_problem_detail(problem_id=problem_id)
-
         if not problem:
-            raise
+            raise ProblemNotExistError()
 
         selections = await self._repository.get_selection_list(problem_id=problem_id, id_list=data.answer_list)
+        if not selections:
+            raise ValidationError("문제에 없는 보기를 고르셨습니다.")
 
         count = 0
         selection_dto_list = []

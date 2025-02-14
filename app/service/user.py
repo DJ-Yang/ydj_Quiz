@@ -20,7 +20,7 @@ class UserService:
 
     async def register(self, register_dto: RequestRegisterDto):
         if register_dto.password != register_dto.password1:
-            raise
+            raise ValidationError("패스워드가 일치하지 않습니다.")
 
         created_user = await self._repository.create_user(
             nickname=register_dto.nickname,
