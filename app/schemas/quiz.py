@@ -6,7 +6,7 @@ from app.schemas.base import ResponseBaseModel
 
 
 class SelectionDto(BaseModel):
-    id: int
+    id: Optional[int] = None
     content: str
     is_correct: Optional[bool] = None
 

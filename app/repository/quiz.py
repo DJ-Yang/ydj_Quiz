@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.quiz import Problem, UserProblemForm, Selection
 from app.schemas.quiz import RequestProblemDto, ProblemUpdateDto
+from app.errors import ProblemNotExistError
 
 
 class QuizRepository:
@@ -70,27 +71,39 @@ class QuizRepository:
 
     async def update_problem(self, problem_id: int, data: ProblemUpdateDto):
         async with self.session_factory() as session:
-            stmt = select(Problem).where(Problem.id == problem_id)
+            stmt = select(Problem).where(Problem.id == problem_id).options(selectinload(Problem.selections))
             result = await session.execute(stmt)
             problem = result.scalars().one_or_none()
 
+            if not problem:
+                raise ProblemNotExistError()
+
             problem.title = data.title
 
-            for selection_data in data.selections:
-                stmt = select(Selection).where(
-                    Selection.id == selection_data.id,
-                    Selection.problem_id == problem_id
+            existing_selection_ids = {selection.id for selection in problem.selections}
+            new_selection_ids = {selection.id for selection in data.selections if selection.id is not None}
+
+            to_delete = existing_selection_ids - new_selection_ids
+            if to_delete:
+                await session.execute(
+                    Selection.__table__.delete().where(Selection.id.in_(to_delete))
                 )
-                result = await session.execute(stmt)
-                selection = result.scalars().one_or_none()
 
-                if not selection:
-                    raise HTTPException(status_code=404, detail=f"Selection {selection_data.id} not found")
-
-                if selection_data.content is not None:
-                    selection.content = selection_data.content
-                if selection_data.is_correct is not None:
-                    selection.is_correct = selection_data.is_correct
+            # TODO: 여기 코드가 너무 비효율적인 것 같은데 좋은 방법이 생각이 안난다.
+            for selection_data in data.selections:
+                if selection_data.id is not None:
+                    for selection in problem.selections:
+                        if selection.id == selection_data.id:
+                            selection.content = selection_data.content
+                            selection.is_correct = selection_data.is_correct
+                            break
+                else:
+                    new_selection = Selection(
+                        content=selection_data.content,
+                        is_correct=selection_data.is_correct,
+                        problem_id=problem.id
+                    )
+                    session.add(new_selection)
 
             await session.commit()
             await session.refresh(problem)
